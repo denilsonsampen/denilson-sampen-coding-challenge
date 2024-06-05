@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from utils.utils import read_csv, insert_batch
 from db.data_models import Departments, Jobs, HiredEmployees
-from sqlalchemy import create_engine, Integer
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import pandas as pd
 from sqlalchemy import func, text
@@ -12,9 +12,9 @@ app = Flask(__name__)
 # Database configuration
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, '../db.globant_db')
-DB_URL = f'sqlite:///{DB_PATH}'
-engine = create_engine(DB_URL)
-Session = sessionmaker(bind=engine)
+DB_URL = f'sqlite:///{DB_PATH}' # Create the database URL for SQLite
+engine = create_engine(DB_URL)  # Create the database engine
+Session = sessionmaker(bind=engine) # Create the database session
 
 # Maximum number of rows to process per batch
 MAX_BATCH_SIZE = 1000
@@ -58,17 +58,18 @@ def upload_csv():
             if batch:
                 insert_batch(session, model.__class__, batch)
         
-        return jsonify({'message': 'Data uploaded successfully'}), 200
+        return jsonify({'message': 'Data uploaded successfully'}), 200  # Return a success message
 
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
-    
+        return jsonify({'error': str(e)}), 500  # Return an error message if an exception occurs
+
+# Define API GET method for employees hired in 2021 by job, department and quarter
 @app.route('/employees_by_job_department_2021', methods=['GET'])
 def employees_by_job_department_2021():
     try:
         session = Session()
-        # Query to get employees hired in 2021 by job and department and quarter
-
+        
+        # Query to get employees hired in 2021 by job, department and quarter
         query = text("""
             SELECT d.department AS department,j.job AS job, 
                      COUNT(CASE WHEN strftime('%m', h.datetime) BETWEEN '01' AND '03' THEN 1 END) AS Q1,
@@ -85,19 +86,22 @@ def employees_by_job_department_2021():
                      ORDER BY department ASC, job ASC;
         """)
         
-        result = session.execute(query)
-        data = result.fetchall()
-        columns = result.keys()
-        results = [dict(zip(columns, row)) for row in data]
-        return jsonify(results), 200
+        result = session.execute(query) # Execute the query
+        data = result.fetchall()    # Fetch all the results
+        columns = result.keys()     # Get the column names
+        results = [dict(zip(columns, row)) for row in data] # Convert results to a list of dictionaries
+        return jsonify(results), 200    # Return the results as JSON
 
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
-    
+        return jsonify({'error': str(e)}), 500  # Return an error message if an exception occurs
+
+# Define API GET method for departments above average hire count in 2021
 @app.route('/departments_above_average', methods=['GET'])
 def departments_above_average():
     try:
         session = Session()
+
+        # Query to get departments above average hire count in 2021
         query = text("""
                 WITH department_hire_counts AS (
                     SELECT 
@@ -121,13 +125,15 @@ def departments_above_average():
                 WHERE dhc.hired > (SELECT avg_hire_count FROM average_hire_count)
                 ORDER BY dhc.hired DESC;
             """)
-        result = session.execute(query)
-        data = result.fetchall()
-        columns = result.keys()
-        results = [dict(zip(columns, row)) for row in data]
-        return jsonify(results), 200
+        
+        result = session.execute(query) # Execute the query
+        data = result.fetchall()    # Fetch all the results
+        columns = result.keys()     # Get the column names
+        results = [dict(zip(columns, row)) for row in data] # Convert results to a list of dictionaries
+        return jsonify(results), 200    # Return the results as JSON
+    
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': str(e)}), 500  # Return an error message if an exception occurs
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True) # Run the Flask application in debug mode
