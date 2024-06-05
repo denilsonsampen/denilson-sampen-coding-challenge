@@ -1,20 +1,25 @@
 from flask import Flask, request, jsonify
 from utils.utils import read_csv, insert_batch
 from db.data_models import Departments, Jobs, HiredEmployees
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, Integer
 from sqlalchemy.orm import sessionmaker
+import pandas as pd
+from sqlalchemy import func
+import os
 
 app = Flask(__name__)
 
 # Database configuration
-DB_URL = 'sqlite:///../db.globant_db'
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, '../db.globant_db')
+DB_URL = f'sqlite:///{DB_PATH}'
 engine = create_engine(DB_URL)
 Session = sessionmaker(bind=engine)
 
 # Maximum number of rows to process per batch
 MAX_BATCH_SIZE = 1000
 
-# Define API POST method
+# Define API POST method for upload CSV data
 @app.route('/upload_csv', methods=['POST'])
 def upload_csv():
     try:
@@ -57,6 +62,35 @@ def upload_csv():
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-    
+
+@app.route('/employees_by_job_department_2021', methods=['GET'])
+def employees_by_job_department_2021():
+    try:
+        session = Session()
+        # Query to get employees hired in 2021 by job and department and quarter
+
+        query = session.query(Departments.department,Jobs.job,
+                              func.sum(func.cast(func.strftime('%m', HiredEmployees.datetime).between('01', '03'), Integer)).label('Q1'),
+                              func.sum(func.cast(func.strftime('%m', HiredEmployees.datetime).between('04', '06'), Integer)).label('Q2'),
+                              func.sum(func.cast(func.strftime('%m', HiredEmployees.datetime).between('07', '09'), Integer)).label('Q3'),
+                              func.sum(func.cast(func.strftime('%m', HiredEmployees.datetime).between('10', '12'), Integer)).label('Q4')
+                              ).join(HiredEmployees, Departments.id == HiredEmployees.department_id).join(Jobs, Jobs.id == HiredEmployees.job_id).filter(
+                                  func.strftime('%Y', HiredEmployees.datetime) == '2021').group_by(
+                                      Departments.department,Jobs.job).order_by(Departments.department.asc(),
+                                                                                Jobs.job.asc())
+        
+        results = query.all()
+
+        session.close()
+
+        df = pd.DataFrame(results, columns=['department', 'job', 'Q1', 'Q2', 'Q3', 'Q4'])
+
+        json_result = df.to_json(orient='records')
+
+        return json_result, 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
     app.run(debug=True)
