@@ -21,6 +21,7 @@ Detailed in requirements.txt
 - requests
 
 ## Folder Structure
+```
 denilson-sampen-coding-challenge/
 │
 ├── api/ # Contains API related code
@@ -31,4 +32,6 @@ denilson-sampen-coding-challenge/
 ├── .gitignore
 └── README.md
 └── requirements.txt
+```
+
 
