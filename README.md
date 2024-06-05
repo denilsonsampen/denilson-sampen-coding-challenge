@@ -6,6 +6,7 @@ This repository contains my solution for the Globant Data Engineering Coding Cha
 - [Technologies Used](#technologies-used)
 - [Libraries Used](#libraries-used)
 - [Folder Structure](#folder-structure)
+- [Setup Instructions](#setup-instructions)
 
 ## About the Project
 This project shows my solutions for the Globant Data Engineering Coding Challenge. It includes Python scripts for data engineering processes.
@@ -34,4 +35,8 @@ denilson-sampen-coding-challenge/
 └── requirements.txt
 ```
 
-
+## Setup Instructions
+1. Clone the repository:
+```sh
+git clone https://github.com/denilsonsampen/denilson-sampen-coding-challenge.git
+```
