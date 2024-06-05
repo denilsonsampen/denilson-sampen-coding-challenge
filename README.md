@@ -68,6 +68,7 @@ cd test
 python test_post.py
 ```
 3. To Test Section 2: SQL
+
 For the first requirement
 ```sh
 cd test
