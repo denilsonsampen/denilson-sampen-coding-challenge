@@ -1,5 +1,5 @@
 # Import SQLAlchemy classes
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 
 # We create an instance of the SQLAlchemy Base class to declare the necessary three tables
@@ -28,6 +28,6 @@ class HiredEmployees(Base):
     # We define column tables
     id = Column(Integer, primary_key=True)
     name = Column(String)
-    datetime = Column(DateTime)
+    datetime = Column(String)
     department_id = Column(Integer, ForeignKey('departments.id'))   # Related to departments table
     job_id = Column(Integer, ForeignKey('jobs.id')) # Related to jobs table
