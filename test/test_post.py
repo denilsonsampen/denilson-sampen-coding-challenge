@@ -12,5 +12,5 @@ data = {'table': 'jobs'}    # Has to match CSV file name
 # Make a POST request to the API endpoint with the CSV file and form data
 response = requests.post(url, files=files, data=data)
 
-# Print the response
+# Print the response test
 print(response.text)
