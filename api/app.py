@@ -3,7 +3,6 @@ from utils.utils import read_csv, insert_batch
 from db.data_models import Departments, Jobs, HiredEmployees
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-import pandas as pd
 from sqlalchemy import func, text
 import os
 
