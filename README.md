@@ -40,3 +40,11 @@ denilson-sampen-coding-challenge/
 ```sh
 git clone https://github.com/denilsonsampen/denilson-sampen-coding-challenge.git
 ```
+2. Navigate to the project directory:
+```sh
+cd denilson-sampen-coding-challenge
+```
+3. Install the required dependencies:
+```sh
+pip install -r requirements.txt
+```
