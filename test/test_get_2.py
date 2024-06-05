@@ -1,7 +1,7 @@
 import requests
 
-url = 'http://127.0.0.1:5000/employees_by_job_department_2021'
-#url = 'http://127.0.0.1:5000/departments_above_average'
+#url = 'http://127.0.0.1:5000/employees_by_job_department_2021'
+url = 'http://127.0.0.1:5000/departments_above_average'
 
 response = requests.get(url)
 
